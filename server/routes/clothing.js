@@ -3,8 +3,10 @@ const router = express.Router();
 const ClothingItem = require('../models/ClothingItem');
 const multer = require('multer');
 
-const upload = multer({ dest: './uploads/' });
-
+const upload = multer({
+    dest: './uploads/',
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB file size limit
+  });
 router.post('/upload', upload.single('image'), async (req, res) => {
   try {
     const { type, name, description } = req.body;
@@ -13,7 +15,8 @@ router.post('/upload', upload.single('image'), async (req, res) => {
     await clothingItem.save();
     res.json({ message: 'Uploaded successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Upload failed' });
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
